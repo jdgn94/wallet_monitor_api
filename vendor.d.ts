@@ -1,5 +1,9 @@
-import { Logger } from "winston";
+import { Logger } from "./src/config/winston";
 
 declare global {
-  let logger: Logger;
+  namespace NodeJS {
+    interface Global {
+      logger: Logger;
+    }
+  }
 }

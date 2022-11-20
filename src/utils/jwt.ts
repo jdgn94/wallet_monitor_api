@@ -2,31 +2,43 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 const secret = process.env.SECRET_TOKEN || "secret";
 
-export const createToken = async (data: Object): Promise<string> => {
-  const token: string = await jwt.sign(data, secret);
+interface IPayload {
+  id: number;
+  username: string;
+  email: string;
+}
+
+export const createToken = (data: Object): string => {
+  const token: string = jwt.sign(data, secret);
   return token;
 };
 
-export const verifyToken = async (token: string): Promise<boolean> => {
-  const payload = await jwt.verify(token, secret);
-  console.log(payload);
+export const verifyToken = (token: string): boolean => {
+  const payload = jwt.verify(token, secret) as IPayload;
   if (!!payload) return true;
   else return false;
 };
 
-export const checkToken = async (
+export const checkToken = (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
-  const authorization = req.header("Authorization");
-  console.log(authorization);
+): any => {
+  const headers = req.headers;
+  const authorization = headers.authorization;
   const token = authorization?.split(" ")[1];
-  if (!token) return res.status(401).send("unauthorize");
+  if (!token) return res.status(401).send({ message: "unauthorize" });
+  res.setHeader("authorization", authorization);
 
-  const check = await verifyToken(token);
-  console.log("resultado del token", check);
+  const check = verifyToken(token);
+  if (!check) return res.status(401).send({ message: "unauthorize" });
+  const payload = jwt.verify(token, secret) as IPayload;
 
-  if (!check) return res.status(401).send("unauthorize");
+  req.params = {
+    ...req.params,
+    user_id: payload.id.toString(),
+    email: payload.email,
+    username: payload.username,
+  };
   next();
 };

@@ -1,11 +1,14 @@
+import dotenv from "dotenv";
 import { Sequelize } from "sequelize";
+
+process.env.NODE_ENV !== "production" && dotenv.config();
 
 const development = {
   username: process.env.USERNAME || "root",
   password: process.env.PASSWORD || "",
   database: process.env.DATABASE || "dev",
   host: process.env.HOST || "localhost",
-  port: process.env.PORT_DB || 3060,
+  port: process.env.PORT_DB || 3306,
   seederStorage: "sequelize",
   seederStorageTableName: "SequelizeSeeds",
   logging: false,
