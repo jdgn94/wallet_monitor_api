@@ -7,10 +7,15 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "Launch Program",
-			"args": [
-				"ts-node-dev"
+			"name": "Wallet Monitor API",
+			"runtimeArgs": [
+        "run",
+        "dev"
 			],
+      "runtimeExecutable": "npm",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
 			"envFile": "${workspaceFolder}/.env",
 			"program": "${workspaceFolder}/src/index.ts",
 			"env": {
