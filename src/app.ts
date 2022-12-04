@@ -12,6 +12,7 @@ const baseURL: String = "/api";
 app.use(morgan("dev"));
 app.use(morgan("combined", { stream }));
 app.use(express.json()); // convert req.body to json
+app.use(express.urlencoded({ extended: false }));
 
 // settings
 app.set("port", process.env.PORT);

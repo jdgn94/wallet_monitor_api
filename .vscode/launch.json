@@ -9,13 +9,13 @@
 			"request": "launch",
 			"name": "Wallet Monitor API",
 			"runtimeArgs": [
-        "run",
-        "dev"
+				"run",
+				"dev"
 			],
-      "runtimeExecutable": "npm",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+			"runtimeExecutable": "npm",
+			"skipFiles": [
+				"<node_internals>/**"
+			],
 			"envFile": "${workspaceFolder}/.env",
 			"program": "${workspaceFolder}/src/index.ts",
 			"env": {

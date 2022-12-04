@@ -23,7 +23,8 @@ const verify = (_req: Request, res: Response): any => {
 
 const signIn = async (req: Request, res: Response): Promise<any> => {
   global.logger.info("on route sign in");
-  const { username, email, password, lang = "en" } = req.body as BodyFetch;
+  const { username, email, password } = req.body as BodyFetch;
+  const { lang = "en" } = req.query;
   const t = await db.sequelize.transaction();
 
   const regExpEmail = new RegExp(
@@ -68,7 +69,7 @@ const signIn = async (req: Request, res: Response): Promise<any> => {
     global.logger.debug(token);
 
     await t.commit();
-    return res.status(200).send({ token });
+    return res.status(200).json({ token });
   } catch (_error: any) {
     const error: Error = _error ?? new Error("Error no defined");
     if (error) {
@@ -112,7 +113,8 @@ const signIn = async (req: Request, res: Response): Promise<any> => {
 
 const logIn = async (req: Request, res: Response): Promise<any> => {
   global.logger.info("on route log in");
-  const { username, password, lang = "en" } = req.body as BodyFetch;
+  const { username, password } = req.body as BodyFetch;
+  const { lang = "en" } = req.query;
 
   try {
     const user = await db.User.findOne({
@@ -122,9 +124,9 @@ const logIn = async (req: Request, res: Response): Promise<any> => {
         password: fn("SHA1", password),
       },
     });
+    console.log(user);
 
     if (!user) throw new Error("user");
-    global.logger.debug(user);
 
     const token = createToken({
       id: user.id,
@@ -133,9 +135,14 @@ const logIn = async (req: Request, res: Response): Promise<any> => {
     });
     global.logger.debug(token);
 
-    return res.status(200).send({ token });
+    const message =
+      lang == "es" ? "Inicio de sesión exitosa" : "Log In successfully";
+
+    res.setHeader("Authorization", token);
+
+    return res.status(200).json({ message });
   } catch (_error: any) {
-    const error: Error = _error ?? new Error("Error no defined");
+    const error = (_error as Error) ?? new Error("Error no defined");
     let message: string;
     if (error.message == "user")
       message =
@@ -143,6 +150,8 @@ const logIn = async (req: Request, res: Response): Promise<any> => {
           ? "Usuario/Coreo o Contraseña no valida"
           : "Username/Email or Password incorrect";
     else message = error.message;
+    console.log(message);
+
     return res.status(400).json({ message });
   }
 };
