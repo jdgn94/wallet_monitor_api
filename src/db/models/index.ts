@@ -1,12 +1,9 @@
-import sequelize from "sequelize";
-
 import connect from "../config";
-import User from "./user";
+import CurrencyModel from "./currency.model";
 
 const db = {
   sequelize: connect,
-  Sequelize: sequelize,
-  User,
+  currencies: CurrencyModel,
 };
 
 export default db;

@@ -2,7 +2,8 @@ import express, { Application } from "express";
 import morgan from "morgan";
 
 import { logger, stream } from "./config/winston";
-import authRoutes from "./routes/auth";
+// import authRoutes from "./routes/auth";
+import currencyRoutes from "./routes/currency.route";
 
 global.logger = logger;
 const app: Application = express();
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 app.set("port", process.env.PORT);
 
 // routes
-app.use(baseURL + "", authRoutes);
+// app.use(baseURL + "", authRoutes);
+app.use(baseURL + "/currency", currencyRoutes);
 
 export default app;
