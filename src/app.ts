@@ -3,6 +3,7 @@ import morgan from "morgan";
 
 import { logger, stream } from "./config/winston";
 // import authRoutes from "./routes/auth";
+
 import currencyRoutes from "./routes/currency.route";
 
 global.logger = logger;
@@ -16,7 +17,7 @@ app.use(express.json()); // convert req.body to json
 app.use(express.urlencoded({ extended: false }));
 
 // settings
-app.set("port", process.env.PORT);
+app.set("port", process.env.PORT || 3000);
 
 // routes
 // app.use(baseURL + "", authRoutes);

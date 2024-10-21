@@ -1,7 +1,39 @@
 import axios from "axios";
 import moment from "moment";
-import { Currency } from "../interfaces/currency.interface";
-import db from "../db/models";
+
+import db from "../db";
+
+interface MetaValue {
+  last_updated_at: Date;
+}
+
+interface DataValue {
+  code: string;
+  value: number;
+}
+
+interface CurrencyResponse {
+  meta: MetaValue;
+  data: DataValue[];
+}
+
+const _insertExchangeRates = async (value: CurrencyResponse) => {
+  const exchangeRates = value.data;
+  const q = db.createQueryRunner();
+  await q.startTransaction();
+  try {
+    for (const code in exchangeRates) {
+      const exchangeRate =
+        exchangeRates[code].value / (code === "VEF" ? 100000 : 1);
+      await q.manager.update("currencies", { code }, { exchangeRate });
+    }
+
+    await q.commitTransaction();
+  } catch (error) {
+    global.logger.error(error);
+    await q.rollbackTransaction();
+  }
+};
 
 const getLastExchangesRate = async () => {
   try {
@@ -19,38 +51,15 @@ const getLastExchangesRate = async () => {
         console.log(data.response);
         return;
       }
+      data as CurrencyResponse;
 
       console.log(data);
-      const resConsult = data as Currency;
+      const resConsult = data;
       await _insertExchangeRates(resConsult);
       return;
     }
   } catch (error) {
     global.logger.error(error);
-  }
-};
-
-const _insertExchangeRates = async (value: Currency) => {
-  const exchangeRates = value.data;
-  const t = await db.sequelize.transaction();
-  try {
-    for (const code in exchangeRates) {
-      const exchangeRate = exchangeRates[code].value / (code === "VEF" ? 100000 : 1);
-      await db.currencies.update(
-        {
-          exchangeRate: exchangeRate,
-        },
-        {
-          where: { code },
-          transaction: t,
-        }
-      );
-    }
-
-    await t.commit();
-  } catch (error) {
-    global.logger.error(error);
-    await t.rollback();
   }
 };
 

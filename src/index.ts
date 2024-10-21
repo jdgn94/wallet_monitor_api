@@ -1,5 +1,5 @@
 import app from "./app";
-import db from "./db/models";
+import db from "./db";
 
 import insertCurrencies from "./db/seeds/currencies.seeds";
 import { getLastExchangesRate } from "./utils/exchangeRates.utils";
@@ -9,9 +9,8 @@ const main = async () => {
     const port = app.get("port");
     app.listen(port);
     global.logger.info(`Server on port ${port}`);
-    await db.sequelize.authenticate();
-    await db.sequelize.sync();
-    insertSeeds(false);
+    await db.initialize();
+    await insertSeeds(false);
     initInterval();
     global.logger.info("Database connected");
   } catch (error) {
