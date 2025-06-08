@@ -1,38 +1,53 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+} from "typeorm";
+import { CurrencyType } from "./currencyType";
+import { ExchangeRate } from "./exchangeRate";
 
 @Entity({ name: "currencies", comment: "Table of currencies" })
 export class Currency {
   @PrimaryGeneratedColumn({
     type: "int",
-    primaryKeyConstraintName: "pk_currency_id",
+    primaryKeyConstraintName: "pkCurrencyId",
   })
-  id: Number;
+  id: number;
 
   @Column({ type: "varchar", name: "name", nullable: false })
-  name: String;
+  name: string;
+
+  @Column({ type: "varchar", name: "namePlural", nullable: false })
+  namePlural: string;
 
   @Column({ type: "varchar", name: "code", nullable: false })
-  code: String;
+  code: string;
 
   @Column({ type: "varchar", name: "symbol", nullable: false })
-  symbol: String;
+  symbol: string;
 
-  @Column({ type: "float", name: "exchange_rate", nullable: false })
-  exchangeRate: Number;
+  @Column({ type: "varchar", name: "symbolNative", nullable: false })
+  symbolNative: string;
 
-  @Column({ type: "int", name: "decimal_digits", nullable: false })
-  decimalDigits: Number;
+  @Column({ type: "int", name: "decimalDigits", nullable: false })
+  decimalDigits: number;
+
+  @Column({ type: "int", name: "typeId", nullable: false })
+  typeId: number;
 
   @Column({
     type: "datetime",
-    name: "created_at",
+    name: "createdAt",
     default: () => "CURRENT_TIMESTAMP",
   })
   createdAt: Date;
 
   @Column({
     type: "datetime",
-    name: "updated_at",
+    name: "updatedAt",
     default: () => "CURRENT_TIMESTAMP",
     onUpdate: "CURRENT_TIMESTAMP",
   })
@@ -40,9 +55,18 @@ export class Currency {
 
   @Column({
     type: "datetime",
-    name: "deleted_at",
+    name: "deletedAt",
     nullable: true,
     default: null,
   })
-  deletedAt: Date;
+  deletedAt: Date | null;
+
+  @ManyToOne(() => CurrencyType, { cascade: true })
+  @JoinColumn({ name: "typeId" })
+  type: CurrencyType;
+
+  @OneToMany(() => ExchangeRate, (exchangeRate) => exchangeRate.currencyId, {
+    cascade: true,
+  })
+  exchangeRates: ExchangeRate[];
 }

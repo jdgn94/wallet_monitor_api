@@ -8,7 +8,7 @@ import currencyRoutes from "./routes/currency.route";
 
 global.logger = logger;
 const app: Application = express();
-const baseURL: String = "/api";
+const baseURL: string = "/api";
 
 // middleware
 app.use(morgan("dev"));
@@ -22,5 +22,8 @@ app.set("port", process.env.PORT || 3000);
 // routes
 // app.use(baseURL + "", authRoutes);
 app.use(baseURL + "/currency", currencyRoutes);
+app.get(`${baseURL}/`, (_req, _res) => {
+  global.logger.info("on function to get root");
+});
 
 export default app;

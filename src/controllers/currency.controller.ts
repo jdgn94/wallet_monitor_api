@@ -7,10 +7,12 @@ const getAll = async (_req: Request, _res: Response) => {
   try {
     const currencies = await db.getRepository(Currency).find();
 
-    return _res.status(200).json({ currencies, message: "All currencies." });
+    _res.status(200).json({ currencies, message: "All currencies." });
+    return;
   } catch (error) {
     global.logger.error(error);
-    return _res.status(500).json({ message: error });
+    _res.status(500).json({ message: error });
+    return;
   }
 };
 

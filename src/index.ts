@@ -1,7 +1,10 @@
 import app from "./app";
 import db from "./db";
 
-import insertCurrencies from "./db/seeds/currencies.seeds";
+import {
+  insertCurrencies,
+  insertCurrencyType,
+} from "./db/seeds/currencies.seeds";
 import { getLastExchangesRate } from "./utils/exchangeRates.utils";
 
 const main = async () => {
@@ -11,6 +14,7 @@ const main = async () => {
     global.logger.info(`Server on port ${port}`);
     await db.initialize();
     await insertSeeds(false);
+    await getLastExchangesRate();
     initInterval();
     global.logger.info("Database connected");
   } catch (error) {
@@ -23,6 +27,7 @@ const main = async () => {
 const insertSeeds = async (runSeeds: boolean) => {
   if (!runSeeds) return;
   global.logger.info("insert seeds");
+  await insertCurrencyType();
   await insertCurrencies();
   global.logger.info("seeds inserted");
 };
@@ -30,7 +35,7 @@ const insertSeeds = async (runSeeds: boolean) => {
 const initInterval = async () => {
   setInterval(() => {
     getLastExchangesRate();
-  }, 60000);
+  }, 10800000);
 };
 
 main();

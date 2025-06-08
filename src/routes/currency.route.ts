@@ -3,6 +3,6 @@ import { getAll } from "../controllers/currency.controller";
 
 const router: Router = Router();
 
-router.get("/all", getAll);
+router.get("/", getAll);
 
 export default router;
